@@ -1,0 +1,197 @@
+# GitLab CI/CD Pipeline for Fort
+# Dual pipelines via tags:
+#  - Production: vX.Y.Z (e.g., v1.2.3) -> fort.example.com
+#  - Development: dev-vX.Y.Z (e.g., dev-v1.2.3)
+
+variables:
+  DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: ""
+  DOCKER_BUILDKIT: 1
+  BUILDKIT_PROGRESS: plain
+  IMAGE_NAME: fort
+  IMAGE_TAG: ${CI_COMMIT_TAG}
+  # NEXUS_BUILD_REGISTRY - for pulling base images during build
+  # NEXUS_PUSH_REGISTRY - for pushing final built images
+  NEXUS_PUSH_IMAGE: ${NEXUS_PUSH_REGISTRY}/maas-hosted/${IMAGE_NAME}
+  NEXUS_BUILD_IMAGE: ${NEXUS_BUILD_REGISTRY}/maas-hosted/${IMAGE_NAME}
+
+stages:
+  - build
+  - deploy
+
+build:production:
+  stage: build
+  image: ${NEXUS_BUILD_REGISTRY}/maas-proxy/${DOCKER_IMAGE}
+  services:
+    - name: ${NEXUS_BUILD_REGISTRY}/maas-proxy/docker:28.4.0-dind
+      command: ["--insecure-registry=$NEXUS_BUILD_REGISTRY"]
+  timeout: 30m
+  before_script:
+    - echo $NEXUS_BUILD_PASSWORD | docker login -u $NEXUS_BUILD_USER --password-stdin $NEXUS_BUILD_REGISTRY
+    - echo $NEXUS_PUSH_PASSWORD | docker login -u $NEXUS_PUSH_USER --password-stdin $NEXUS_PUSH_REGISTRY
+    - docker pull $NEXUS_PUSH_IMAGE:latest || true
+  script:
+    - |
+      docker build -f Dockerfile.prod \
+        --build-arg NODE_IMAGE=${NEXUS_BUILD_REGISTRY}/maas-proxy/${NODE_IMAGE} \
+        --build-arg NPM_REGISTRY=$NPM_REGISTRY \
+        --build-arg NPM_AUTH=$NPM_AUTH \
+        --build-arg APT_PROXY=$APT_PROXY \
+        --build-arg GIT_TAG=$CI_COMMIT_TAG \
+        --build-arg GIT_HASH=$CI_COMMIT_SHA \
+        --build-arg GIT_BRANCH=$CI_COMMIT_REF_NAME \
+        --build-arg BUILDKIT_INLINE_CACHE=1 \
+        --cache-from $NEXUS_PUSH_IMAGE:latest \
+        -t $NEXUS_PUSH_IMAGE:$IMAGE_TAG \
+        -t $NEXUS_PUSH_IMAGE:latest .
+    - docker push $NEXUS_PUSH_IMAGE:$IMAGE_TAG
+    - docker push $NEXUS_PUSH_IMAGE:latest
+    - docker rmi $NEXUS_PUSH_IMAGE:$IMAGE_TAG $NEXUS_PUSH_IMAGE:latest || true
+    - docker image prune -f || true
+  only:
+    - /^v[0-9]+\.[0-9]+\.[0-9]+$/
+  tags:
+    - maas
+
+build:development:
+  stage: build
+  image: ${NEXUS_BUILD_REGISTRY}/maas-proxy/${DOCKER_IMAGE}
+  services:
+    - name: ${NEXUS_BUILD_REGISTRY}/maas-proxy/docker:28.4.0-dind
+      command: ["--insecure-registry=$NEXUS_BUILD_REGISTRY"]
+  timeout: 30m
+  before_script:
+    - echo $NEXUS_BUILD_PASSWORD | docker login -u $NEXUS_BUILD_USER --password-stdin $NEXUS_BUILD_REGISTRY
+    - echo $NEXUS_PUSH_PASSWORD | docker login -u $NEXUS_PUSH_USER --password-stdin $NEXUS_PUSH_REGISTRY
+    - docker pull $NEXUS_BUILD_IMAGE:dev-latest || true
+  script:
+    - |
+      docker build -f Dockerfile.prod \
+        --build-arg NODE_IMAGE=${NEXUS_BUILD_REGISTRY}/maas-proxy/${NODE_IMAGE} \
+        --build-arg NPM_REGISTRY=$NPM_REGISTRY \
+        --build-arg NPM_AUTH=$NPM_AUTH \
+        --build-arg APT_PROXY=$APT_PROXY \
+        --build-arg GIT_TAG=$CI_COMMIT_TAG \
+        --build-arg GIT_HASH=$CI_COMMIT_SHA \
+        --build-arg GIT_BRANCH=$CI_COMMIT_REF_NAME \
+        --build-arg BUILDKIT_INLINE_CACHE=1 \
+        --cache-from $NEXUS_BUILD_IMAGE:dev-latest \
+        -t $NEXUS_BUILD_IMAGE:$IMAGE_TAG \
+        -t $NEXUS_BUILD_IMAGE:dev-latest .
+    - docker push $NEXUS_BUILD_IMAGE:$IMAGE_TAG
+    - docker push $NEXUS_BUILD_IMAGE:dev-latest
+    - docker rmi $NEXUS_BUILD_IMAGE:$IMAGE_TAG $NEXUS_BUILD_IMAGE:dev-latest || true
+    - docker image prune -f || true
+  only:
+    - /^dev-v[0-9]+\.[0-9]+\.[0-9]+$/
+  tags:
+    - maas
+
+deploy:production:
+  stage: deploy
+  image: ${NEXUS_PUSH_REGISTRY}/maas-hosted/maas-deploy-tools:latest
+  environment: prod
+  before_script:
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - export SSH_PORT="${SSH_PORT:-22}"
+    - 'test -n "$SSH_HOST" || { echo "SSH_HOST is not set"; exit 1; }'
+    - ssh-keyscan -T 5 -p "$SSH_PORT" "$SSH_HOST" >> ~/.ssh/known_hosts 2>/dev/null || true
+    - chmod 644 ~/.ssh/known_hosts
+  script:
+    - scp -P $SSH_PORT docker-compose.yml $SSH_USER@$SSH_HOST:$REMOTE_PROJECT_PATH/
+    - ssh -p $SSH_PORT $SSH_USER@$SSH_HOST "mkdir -p $REMOTE_PROJECT_PATH/scripts/ci"
+    - scp -P $SSH_PORT scripts/ci/deploy-cleanup.sh $SSH_USER@$SSH_HOST:$REMOTE_PROJECT_PATH/scripts/ci/deploy-cleanup.sh
+    - |
+      ssh -p $SSH_PORT $SSH_USER@$SSH_HOST << EOF
+        set -e
+        echo "PROD: Starting deployment..."
+        if [ ! -d "${REMOTE_PROJECT_PATH}" ]; then
+          sudo mkdir -p ${REMOTE_PROJECT_PATH}
+          sudo chown ${SSH_USER}:${SSH_USER} "${REMOTE_PROJECT_PATH}"
+        fi
+        cd ${REMOTE_PROJECT_PATH}
+        echo "PUBLIC_HOST=${PROD_PUBLIC_HOST}" > .env
+        echo ${NEXUS_PUSH_PASSWORD} | docker login -u ${NEXUS_PUSH_USER} --password-stdin ${NEXUS_PUSH_REGISTRY}
+        sed -i "s|image:.*fort:.*|image: ${NEXUS_PUSH_IMAGE}:${IMAGE_TAG}|g" docker-compose.yml
+        sudo docker compose pull
+        sudo docker compose down || true
+        sudo docker compose up -d
+        sleep 10
+        if docker compose ps | grep -q "Up"; then echo "PROD: Container is running"; else sudo docker compose logs; exit 1; fi
+        CONTAINER_NAME=\$(sudo docker compose ps -q)
+        if [ -n "\$CONTAINER_NAME" ]; then
+          for i in \$(seq 1 30); do
+            if sudo docker exec \$CONTAINER_NAME curl -f http://localhost:80/health 2>/dev/null; then
+              echo "PROD: health check passed"
+              break
+            elif [ "\$i" -eq 30 ]; then
+              echo "PROD: health check failed"
+              sudo docker compose logs
+              exit 1
+            else
+              sleep 2
+            fi
+          done
+        fi
+        echo "Deployment completed at \$(date)" > deployment.log
+        echo "Image: ${NEXUS_PUSH_IMAGE}:${IMAGE_TAG}" >> deployment.log
+        echo "Git tag: ${IMAGE_TAG}" >> deployment.log
+        echo "Git commit: ${CI_COMMIT_SHA}" >> deployment.log
+        mkdir -p scripts/ci
+        . scripts/ci/deploy-cleanup.sh
+        cleanup_app_images "${NEXUS_PUSH_IMAGE}" "${IMAGE_TAG}"
+      EOF
+  only:
+    - /^v[0-9]+\.[0-9]+\.[0-9]+$/
+  dependencies:
+    - build:production
+  tags:
+    - maas
+
+deploy:development:
+  stage: deploy
+  image: ${NEXUS_PUSH_REGISTRY}/maas-hosted/maas-deploy-tools:latest
+  environment: dev
+  before_script:
+    - eval $(ssh-agent -s)
+    - echo "$DEV_SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - export DEV_SSH_PORT="${DEV_SSH_PORT:-22}"
+    - 'test -n "$DEV_SSH_HOST" || { echo "DEV_SSH_HOST is not set"; exit 1; }'
+    - ssh-keyscan -T 5 -p "$DEV_SSH_PORT" "$DEV_SSH_HOST" >> ~/.ssh/known_hosts 2>/dev/null || true
+    - chmod 644 ~/.ssh/known_hosts
+  script:
+    - scp -P $DEV_SSH_PORT docker-compose.yml $DEV_SSH_USER@$DEV_SSH_HOST:$DEV_REMOTE_PROJECT_PATH/
+    - ssh -p $DEV_SSH_PORT $DEV_SSH_USER@$DEV_SSH_HOST "mkdir -p $DEV_REMOTE_PROJECT_PATH/scripts/ci"
+    - scp -P $DEV_SSH_PORT scripts/ci/deploy-cleanup.sh $DEV_SSH_USER@$DEV_SSH_HOST:$DEV_REMOTE_PROJECT_PATH/scripts/ci/deploy-cleanup.sh
+    - |
+      ssh -p $DEV_SSH_PORT $DEV_SSH_USER@$DEV_SSH_HOST << EOF
+        set -e
+        echo "DEV: Starting development deployment..."
+        if [ ! -d "${DEV_REMOTE_PROJECT_PATH}" ]; then
+          sudo mkdir -p ${DEV_REMOTE_PROJECT_PATH}
+          sudo chown ${DEV_SSH_USER}:${DEV_SSH_USER} "${DEV_REMOTE_PROJECT_PATH}"
+        fi
+        cd ${DEV_REMOTE_PROJECT_PATH}
+        echo "PUBLIC_HOST=${DEV_PUBLIC_HOST}" > .env
+        echo ${NEXUS_BUILD_PASSWORD} | docker login -u ${NEXUS_BUILD_USER} --password-stdin ${NEXUS_BUILD_REGISTRY}
+        sed -i "s|image:.*fort:.*|image: ${NEXUS_BUILD_IMAGE}:${IMAGE_TAG}|g" docker-compose.yml
+        sudo docker compose pull
+        sudo docker compose down || true
+        sudo docker compose up -d
+        sleep 10
+        if docker compose ps | grep -q "Up"; then echo "DEV: Container is running"; else sudo docker compose logs; exit 1; fi
+        mkdir -p scripts/ci
+        . scripts/ci/deploy-cleanup.sh
+        cleanup_app_images "${NEXUS_BUILD_IMAGE}" "${IMAGE_TAG}"
+      EOF
+  only:
+    - /^dev-v[0-9]+\.[0-9]+\.[0-9]+$/
+  dependencies:
+    - build:development
+  tags:
+    - maas

@@ -1,0 +1,26 @@
+# Local machine: build with Dockerfile.local, port 8082, maas-shared network.
+# Create the network once if it does not exist: docker network create maas-shared
+
+services:
+  fort:
+    build:
+      context: .
+      dockerfile: Dockerfile.local
+    container_name: fort
+    ports:
+      - "8082:80"
+    restart: unless-stopped
+    environment:
+      CONTACT_WEBHOOK_URL: ${CONTACT_WEBHOOK_URL:-}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - maas-shared
+
+networks:
+  maas-shared:
+    external: true

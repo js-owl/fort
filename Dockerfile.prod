@@ -1,0 +1,70 @@
+# Build arguments for flexible registry configuration
+ARG NODE_IMAGE="vortex.kronshtadt.ru:8443/maas-proxy/node:20.19.5-slim"
+ARG APT_PROXY=""
+
+FROM ${NODE_IMAGE} AS builder
+
+ARG NPM_REGISTRY=""
+ARG NPM_AUTH=
+ARG APT_PROXY
+ARG GIT_TAG=""
+ARG GIT_HASH=""
+ARG GIT_BRANCH=""
+
+WORKDIR /app
+
+RUN if [ -n "${APT_PROXY}" ]; then \
+        echo "Acquire::http::Proxy \"${APT_PROXY}\";" > /etc/apt/apt.conf.d/99proxy && \
+        echo "Acquire::https::Proxy \"${APT_PROXY}\";" >> /etc/apt/apt.conf.d/99proxy; \
+    fi
+
+RUN if [ -n "${NPM_REGISTRY}" ]; then npm config set registry ${NPM_REGISTRY}; fi
+RUN if [ -n "${NPM_AUTH}" ]; then npm config set //${NPM_REGISTRY#https://}:_auth=${NPM_AUTH}; fi
+RUN if [ -n "${NPM_REGISTRY}" ] && [ "${NPM_REGISTRY}" != "https://registry.npmjs.org/" ]; then npm config set strict-ssl false; fi
+
+COPY package*.json ./
+RUN npm ci
+
+COPY . .
+
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV GIT_TAG=${GIT_TAG}
+ENV GIT_HASH=${GIT_HASH}
+ENV GIT_BRANCH=${GIT_BRANCH}
+RUN npm run build
+
+FROM ${NODE_IMAGE} AS runner
+
+ARG APT_PROXY
+
+WORKDIR /app
+
+RUN if [ -n "${APT_PROXY}" ]; then \
+        echo "Acquire::http::Proxy \"${APT_PROXY}\";" > /etc/apt/apt.conf.d/99proxy && \
+        echo "Acquire::https::Proxy \"${APT_PROXY}\";" >> /etc/apt/apt.conf.d/99proxy; \
+    fi \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends nginx curl ca-certificates \
+    && rm -rf /var/lib/apt/lists/* \
+    && groupadd --system --gid 1001 nodejs \
+    && useradd --system --uid 1001 --gid nodejs --home /app nextjs
+
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV PORT=3000
+ENV HOSTNAME=127.0.0.1
+
+COPY --from=builder --chown=nextjs:nodejs /app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY nginx.conf /etc/nginx/nginx.conf
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+RUN sed -i 's/\r$//' /docker-entrypoint.sh && chmod +x /docker-entrypoint.sh \
+    && rm -f /etc/nginx/sites-enabled/default /etc/nginx/conf.d/default.conf || true
+
+EXPOSE 80
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+  CMD curl -f http://localhost:80/health || exit 1
+
+ENTRYPOINT ["/docker-entrypoint.sh"]
