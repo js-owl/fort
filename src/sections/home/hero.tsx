@@ -19,12 +19,11 @@ export function Hero() {
       <div className="absolute inset-0 bg-linear-to-t from-ink via-ink/55 to-ink/25 lg:hidden" />
       <SiteHeader />
       <div className="relative z-10 flex flex-1 flex-col justify-between px-page py-page">
-        <div className="flex max-w-3xl flex-col gap-5">
+        <div className="flex max-w-4xl flex-col gap-5">
           <h1 className="flex flex-col gap-5">
             <span className="text-h1 font-medium uppercase">Форт - 9</span>
-            <span className="text-h2 font-medium uppercase">
-              Технологии защиты
-              <br />в едином комплексе
+            <span className="max-w-[17em] text-[clamp(1.75rem,0.9rem+1.4vw,3.125rem)] leading-[1.2] font-medium uppercase">
+              Комплексные решения для защиты объектов от БПЛА
             </span>
           </h1>
           <p className="max-w-[600px] text-lead text-muted">
@@ -32,8 +31,8 @@ export function Hero() {
             объединенных технологий единой цифровой платформы
           </p>
         </div>
-        <Button href="#capabilities" className="mt-12 w-fit">
-          Определиться с конфигурацией
+        <Button href="#contact" className="mt-12 w-fit">
+          Подобрать конфигурацию
           <Image
             src="/images/home/chevron-right.svg"
             alt=""

@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { navigation } from "@/content/home";
 
 export function MobileNav() {
@@ -59,23 +58,16 @@ export function MobileNav() {
           <ul className="mt-10 flex flex-col gap-2">
             {navigation.map((item) => (
               <li key={item.href}>
-                <Link
+                <a
                   href={item.href}
                   className="block py-3 text-2xl font-medium"
                   onClick={() => setOpen(false)}
                 >
                   {item.label}
-                </Link>
+                </a>
               </li>
             ))}
           </ul>
-          <Link
-            href="/#contact"
-            className="mt-8 inline-flex items-center justify-center bg-brand px-8 py-5 text-xl font-medium"
-            onClick={() => setOpen(false)}
-          >
-            Связаться с нами
-          </Link>
         </nav>
       ) : null}
     </div>
