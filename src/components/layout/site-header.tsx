@@ -9,9 +9,9 @@ export function SiteHeader() {
       <Link href="/" className="shrink-0">
         <Image
           src="/images/home/logo.svg"
-          alt="Форт-9"
-          width={173}
-          height={21}
+          alt="Аэромакс"
+          width={180}
+          height={42}
         />
       </Link>
       <div className="flex shrink-0 items-center">

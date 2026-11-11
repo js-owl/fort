@@ -6,9 +6,12 @@ import { Industries } from "@/sections/home/industries";
 import { Process } from "@/sections/home/process";
 
 export const metadata: Metadata = {
-  title: { absolute: "Форт-9 — технологии защиты в едином комплексе" },
+  title: {
+    absolute:
+      "Аэромакс защита — комплексные решения для защиты объектов от БПЛА",
+  },
   description:
-    "Выявление, сопровождение и нейтрализация воздушных угроз. Комплексная защита объектов критически важных отраслей.",
+    "Средства обнаружения и противодействия воздушным угрозам в единой цифровой платформе.",
 };
 
 export default function HomePage() {

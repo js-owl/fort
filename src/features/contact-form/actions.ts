@@ -7,7 +7,9 @@ import {
   type ContactState,
 } from "@/features/contact-form/schema";
 
-function readField(formData: FormData, key: keyof ContactInput) {
+const textFields = ["name", "company", "phone", "email", "task"] as const;
+
+function readField(formData: FormData, key: (typeof textFields)[number]) {
   const value = formData.get(key);
   return typeof value === "string" ? value : "";
 }
@@ -22,8 +24,11 @@ function fieldErrorsOf(error: {
     if (
       key === "name" ||
       key === "company" ||
-      key === "contact" ||
-      key === "task"
+      key === "phone" ||
+      key === "email" ||
+      key === "task" ||
+      key === "consentPersonal" ||
+      key === "consentMarketing"
     ) {
       fieldErrors[key] ??= issue.message;
     }
@@ -39,8 +44,11 @@ export async function submitContact(
   const parsed = contactSchema.safeParse({
     name: readField(formData, "name"),
     company: readField(formData, "company"),
-    contact: readField(formData, "contact"),
+    phone: readField(formData, "phone"),
+    email: readField(formData, "email"),
     task: readField(formData, "task"),
+    consentPersonal: formData.get("consentPersonal") === "on",
+    consentMarketing: formData.get("consentMarketing") === "on",
   });
 
   if (!parsed.success) {

@@ -28,9 +28,7 @@ export function CapabilitiesSlider({
   return (
     <div className="flex min-w-0 flex-col gap-10">
       <div className="flex items-end justify-between gap-6">
-        <h2 className="text-h2 font-medium uppercase">
-          Технические средства
-        </h2>
+        <h2 className="text-h2 font-medium uppercase">Технические средства</h2>
         <div className="flex shrink-0 gap-3">
           <button
             type="button"
@@ -83,23 +81,6 @@ export function CapabilitiesSlider({
             <h3 className="text-h3 leading-[1.4] font-medium">
               {product.title}
             </h3>
-            <dl>
-              {product.specs.map((spec) => (
-                <div key={spec.label}>
-                  <div className="grid grid-cols-2 gap-4 py-2.5 font-table text-sm leading-[1.4] font-medium sm:text-base">
-                    <dt>{spec.label}</dt>
-                    <dd className="text-right">{spec.value}</dd>
-                  </div>
-                  <Image
-                    src="/images/home/line.svg"
-                    alt=""
-                    width={750}
-                    height={1}
-                    className="block h-px w-full"
-                  />
-                </div>
-              ))}
-            </dl>
           </article>
         ))}
       </div>
