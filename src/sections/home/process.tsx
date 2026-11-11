@@ -17,7 +17,9 @@ export function Process() {
       <Container className="relative flex flex-col gap-10 py-page lg:gap-[60px]">
         <SectionHeading
           title={"От обследования объекта\nдо внедрения защиты"}
-          description="Мы обеспечиваем полный цикл внедрения решений FORT 9 на вашем объекте."
+          description={
+            "Мы обеспечиваем полный цикл\nвнедрения на вашем объекте"
+          }
         />
         <ol className="flex max-w-[880px] flex-col gap-5">
           {processSteps.map((step) => (

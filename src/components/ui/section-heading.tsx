@@ -11,7 +11,7 @@ export function SectionHeading({
         {title}
       </h2>
       {description ? (
-        <p className="min-w-0 text-lead text-muted lg:w-[min(560px,42%)]">
+        <p className="min-w-0 text-lead whitespace-pre-line text-muted lg:w-[min(560px,42%)]">
           {description}
         </p>
       ) : null}
