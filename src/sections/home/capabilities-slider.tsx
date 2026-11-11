@@ -29,7 +29,7 @@ export function CapabilitiesSlider({
     <div className="flex min-w-0 flex-col gap-10">
       <div className="flex items-end justify-between gap-6">
         <h2 className="text-h2 font-medium uppercase">
-          Технические возможности
+          Технические средства
         </h2>
         <div className="flex shrink-0 gap-3">
           <button

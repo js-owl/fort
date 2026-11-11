@@ -99,7 +99,6 @@ export type Product = {
   specs: readonly { label: string; value: string }[];
 };
 
-// The third card repeats the radar station, matching the current Figma frame.
 export const products: readonly Product[] = [
   {
     id: "radar",
@@ -108,14 +107,14 @@ export const products: readonly Product[] = [
     specs: radarSpecs,
   },
   {
-    id: "multisensor",
-    title: "Мультисенсорная система",
+    id: "droneport",
+    title: "Дронопорт+дроны-перехватчики",
     image: "/images/home/product-multisensor.webp",
     specs: multisensorSpecs,
   },
   {
-    id: "radar-2",
-    title: "Радиолокационная станция (РЛС)",
+    id: "handheld-interceptor",
+    title: "Ручной дрон-перехватчик",
     image: "/images/home/product-radar.webp",
     specs: radarSpecs,
   },
