@@ -8,7 +8,7 @@ export function Industries() {
     <section id="industries" className="scroll-mt-6 bg-dark py-page">
       <Container className="flex flex-col gap-10">
         <SectionHeading
-          title={"Критически важные отрасли.\nреальные задачи"}
+          title="Обеспечиваем безопасность в критически важных отраслях"
           description="Комплесный подход к безопасности объектов различного назначения и масштаба"
         />
         <ul className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
