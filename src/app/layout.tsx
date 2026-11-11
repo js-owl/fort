@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { BuildTag } from "@/components/layout/build-tag";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -37,6 +38,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           К содержанию
         </a>
         <div className="mx-auto w-full max-w-[1920px]">{children}</div>
+        <BuildTag />
       </body>
     </html>
   );
