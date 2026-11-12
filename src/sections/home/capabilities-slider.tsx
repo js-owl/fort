@@ -15,7 +15,8 @@ function maxStartIndex(root: HTMLElement, cards: HTMLElement[]) {
   let max = 0;
 
   for (let i = 0; i < cards.length; i++) {
-    if (cards[i].offsetLeft <= limit + 1) max = i;
+    const card = cards[i];
+    if (card && card.offsetLeft <= limit + 1) max = i;
   }
 
   return max;
@@ -49,10 +50,13 @@ export function CapabilitiesSlider({
     if (next > max) next = 0;
     if (next < 0) next = max;
 
+    const target = items[next];
+    if (!target) return;
+
     index.current = next;
     ignoreScroll.current = true;
     root.scrollTo({
-      left: items[next].offsetLeft,
+      left: target.offsetLeft,
       behavior: wrapping || prefersReducedMotion() ? "auto" : "smooth",
     });
     window.setTimeout(() => {
@@ -91,7 +95,10 @@ export function CapabilitiesSlider({
       let best = Number.POSITIVE_INFINITY;
 
       for (let i = 0; i <= max; i++) {
-        const distance = Math.abs(items[i].offsetLeft - root.scrollLeft);
+        const item = items[i];
+        if (!item) continue;
+
+        const distance = Math.abs(item.offsetLeft - root.scrollLeft);
         if (distance < best) {
           best = distance;
           closest = i;
