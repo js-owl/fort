@@ -14,7 +14,7 @@ export function PlatformCapabilities() {
             {platformCapabilities.title}
           </h2>
         </div>
-        <ul className="grid items-stretch gap-5 lg:h-[847px] lg:grid-cols-3">
+        <ul className="grid items-stretch gap-5 lg:grid-cols-3">
           {platformCapabilities.items.map((item) => (
             <li
               key={item.title}
@@ -26,18 +26,13 @@ export function PlatformCapabilities() {
                 </h3>
                 <p className="text-lead text-muted">{item.text}</p>
               </div>
-              <div className="relative h-64 w-full overflow-hidden sm:h-80 lg:h-[540px]">
+              <div className="relative aspect-[343/436] w-full">
                 <Image
                   src={item.image}
                   alt={item.imageAlt}
-                  width={349}
-                  height={435}
+                  fill
                   sizes="(min-width: 1024px) 30vw, 100vw"
-                  className={
-                    item.crop
-                      ? "absolute top-[-16.32%] left-0 h-[126.32%] w-full max-w-none"
-                      : "absolute inset-0 size-full object-cover"
-                  }
+                  className="object-contain object-top"
                 />
               </div>
             </li>

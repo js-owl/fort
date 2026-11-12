@@ -6,7 +6,7 @@ export function Hero() {
   return (
     <section
       id="top"
-      className="relative flex min-h-svh flex-col lg:min-h-[1080px]"
+      className="relative flex min-h-[calc(100vw*941/1672)] flex-col"
     >
       <Image
         src="/images/home/hero.webp"
@@ -14,7 +14,7 @@ export function Hero() {
         fill
         priority
         sizes="(min-width: 1920px) 1920px, 100vw"
-        className="object-cover object-[72%_center]"
+        className="object-contain object-top"
       />
       <div className="absolute inset-0 bg-linear-to-t from-ink via-ink/55 to-ink/25 lg:hidden" />
       <SiteHeader />

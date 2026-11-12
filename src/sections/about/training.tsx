@@ -3,13 +3,13 @@ import { aboutTraining } from "@/content/about";
 
 export function AboutTraining() {
   return (
-    <section className="relative flex min-h-[640px] items-start overflow-hidden lg:h-[800px]">
+    <section className="relative flex min-h-[calc(100vw*522/1024)] items-start">
       <Image
         src={aboutTraining.image}
         alt=""
         fill
         sizes="(min-width: 1920px) 1920px, 100vw"
-        className="object-cover object-[72%_center]"
+        className="object-contain object-top"
       />
       <div className="absolute inset-0 bg-linear-to-r from-dark via-dark/75 to-transparent lg:hidden" />
       <div className="relative z-10 flex flex-col gap-8 px-page py-16 lg:gap-10 lg:p-page">

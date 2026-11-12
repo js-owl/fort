@@ -13,7 +13,7 @@ export function AboutHero() {
           height={538}
           preload
           sizes="(min-width: 1024px) 67vw, 100vw"
-          className="absolute top-0 left-[32.83%] h-full w-[67.19%] max-w-none object-cover"
+          className="absolute top-0 left-[32.83%] h-auto w-[67.19%] max-w-none"
         />
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#191919_32.969%,transparent_65.469%)]" />
         <div className="absolute inset-0 bg-dark/75 lg:hidden" />

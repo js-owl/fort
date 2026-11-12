@@ -5,13 +5,16 @@ import { SectionHeading } from "@/components/ui/section-heading";
 
 export function Process() {
   return (
-    <section id="process" className="relative scroll-mt-6">
+    <section
+      id="process"
+      className="relative min-h-[calc(100vw*941/1670)] scroll-mt-6"
+    >
       <Image
         src="/images/home/process-bg.webp"
         alt=""
         fill
         sizes="(min-width: 1920px) 1920px, 100vw"
-        className="object-cover object-right"
+        className="object-contain object-top"
       />
       <div className="absolute inset-0 bg-linear-to-b from-dark from-[6%] to-transparent to-[55%]" />
       <Container className="relative flex flex-col gap-10 py-page lg:gap-[60px]">

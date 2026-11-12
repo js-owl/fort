@@ -5,16 +5,16 @@ import { configurationHero } from "@/content/configurations";
 
 export function ConfigurationHero() {
   return (
-    <section className="flex min-h-svh flex-col bg-dark">
+    <section className="flex flex-col bg-dark">
       <SiteHeader />
-      <div className="relative flex flex-1 flex-col justify-between gap-12 px-page py-16 lg:p-page">
+      <div className="relative flex min-h-[calc(100vw*941/1672)] flex-1 flex-col justify-between gap-12 px-page py-16 lg:p-page">
         <Image
           src={configurationHero.image}
           alt={configurationHero.imageAlt}
           fill
           priority
           sizes="(min-width: 1920px) 1920px, 100vw"
-          className="object-cover"
+          className="object-contain object-top"
         />
         <div className="relative z-10 flex max-w-[1100px] flex-col gap-8 lg:gap-10">
           <h1 className="text-h1 font-medium whitespace-pre-line uppercase">

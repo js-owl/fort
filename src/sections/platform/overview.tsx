@@ -12,7 +12,7 @@ export function PlatformOverview() {
             alt={platformOverview.imageAlt}
             fill
             sizes="(min-width: 1920px) 1720px, 100vw"
-            className="object-cover"
+            className="object-contain"
           />
         </div>
       </Container>

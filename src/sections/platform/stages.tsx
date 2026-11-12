@@ -23,13 +23,13 @@ export function PlatformStages() {
                   </div>
                   <p className="text-lead text-muted">{stage.text}</p>
                 </div>
-                <div className="relative h-52 w-full sm:h-64 lg:h-80">
+                <div className="relative aspect-[262/139] w-full">
                   <Image
                     src={stage.image}
                     alt={stage.imageAlt}
                     fill
                     sizes="(min-width: 1024px) 30vw, 100vw"
-                    className="object-cover"
+                    className="object-contain object-top"
                   />
                 </div>
               </div>

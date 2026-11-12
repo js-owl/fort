@@ -21,13 +21,13 @@ export function AboutStages() {
                 <h3 className="text-h3 font-medium">{item.title}</h3>
                 <p className="text-lead text-muted">{item.text}</p>
               </div>
-              <div className="relative h-64 w-full sm:h-80">
+              <div className="relative aspect-[290/201] w-full">
                 <Image
                   src={item.image}
                   alt={item.imageAlt}
                   fill
                   sizes="(min-width: 1024px) 30vw, 100vw"
-                  className="object-cover"
+                  className="object-contain object-top"
                 />
               </div>
               <p className="text-lead text-brand">{item.label}</p>

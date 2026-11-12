@@ -21,19 +21,19 @@ export function ConfigurationSystems() {
           {configurationDetection.items.map((item) => (
             <li
               key={item.title}
-              className="flex flex-col justify-end gap-8 bg-panel p-6 sm:p-10 lg:h-[440px] lg:flex-row lg:items-end lg:gap-10"
+              className="flex flex-col justify-end gap-8 bg-panel p-6 sm:p-10 lg:flex-row lg:items-end lg:gap-10"
             >
               <div className="flex w-full shrink-0 flex-col gap-5 lg:w-[min(400px,52%)]">
                 <h3 className="text-h3 font-medium">{item.title}</h3>
                 <p className="text-lead text-muted">{item.text}</p>
               </div>
-              <div className="relative h-64 w-full overflow-hidden sm:h-72 lg:h-full lg:min-w-0 lg:flex-1">
+              <div className="relative aspect-square w-full lg:min-w-0 lg:flex-1">
                 <Image
                   src={item.image}
                   alt={item.imageAlt}
                   fill
                   sizes="(min-width: 1024px) 360px, 100vw"
-                  className="object-cover"
+                  className="object-contain"
                 />
               </div>
             </li>
@@ -51,7 +51,7 @@ export function ConfigurationSystems() {
           {configurationCounter.items.map((item) => (
             <li
               key={item.title}
-              className="flex flex-col gap-8 bg-panel p-6 sm:p-10 lg:h-[500px] lg:flex-row lg:items-start lg:gap-2.5"
+              className="flex flex-col gap-8 bg-panel p-6 sm:p-10 lg:flex-row lg:items-start lg:gap-2.5"
             >
               <div className="flex w-full shrink-0 flex-col gap-5 lg:w-[min(400px,52%)]">
                 <h3 className="text-h3 leading-[1.4] font-normal">
@@ -65,13 +65,13 @@ export function ConfigurationSystems() {
                 />
                 <p className="text-h3 leading-[1.4] font-normal">{item.text}</p>
               </div>
-              <div className="relative h-72 w-full overflow-hidden sm:h-80 lg:h-full lg:min-w-0 lg:flex-1">
+              <div className="relative aspect-square w-full lg:min-w-0 lg:flex-1">
                 <Image
                   src={item.image}
                   alt={item.imageAlt}
                   fill
                   sizes="(min-width: 1024px) 400px, 100vw"
-                  className="object-cover"
+                  className="object-contain"
                 />
               </div>
             </li>

@@ -15,13 +15,13 @@ const cellClass =
 
 export function ConfigurationMatrix() {
   return (
-    <section className="relative overflow-hidden">
+    <section className="relative min-h-[calc(100vw*941/1671)]">
       <Image
         src={configurationMatrix.background}
         alt=""
         fill
         sizes="(min-width: 1920px) 1920px, 100vw"
-        className="object-cover"
+        className="object-contain object-top"
       />
       <div className="absolute inset-0 bg-linear-to-b from-dark from-[4%] to-transparent" />
       <Container className="relative flex flex-col gap-10 py-page lg:gap-[60px]">

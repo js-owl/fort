@@ -14,13 +14,13 @@ export function AboutCycle() {
               key={item.title}
               className="flex flex-col gap-8 bg-panel p-6 sm:gap-10 sm:p-10"
             >
-              <div className="relative h-64 w-full sm:h-80">
+              <div className="relative aspect-[286/188] w-full">
                 <Image
                   src={item.image}
                   alt={item.imageAlt}
                   fill
                   sizes="(min-width: 1024px) 30vw, 100vw"
-                  className="object-cover"
+                  className="object-contain"
                 />
               </div>
               <div className="flex flex-col gap-5">

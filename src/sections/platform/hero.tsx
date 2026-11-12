@@ -17,14 +17,14 @@ export function PlatformHero() {
             {platformHero.text}
           </p>
         </div>
-        <div className="relative aspect-[1490/694] w-full max-w-[1490px] overflow-hidden">
+        <div className="relative aspect-[1024/433] w-full max-w-[1490px]">
           <Image
             src={platformHero.image}
             alt={platformHero.imageAlt}
             fill
             priority
             sizes="(min-width: 1920px) 1490px, 100vw"
-            className="object-cover"
+            className="object-contain"
           />
           <div className="absolute inset-0 bg-linear-to-b from-transparent to-white/13" />
         </div>

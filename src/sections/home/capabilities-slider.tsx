@@ -158,13 +158,13 @@ export function CapabilitiesSlider({
             data-card
             className="flex w-full shrink-0 snap-start flex-col gap-5 bg-panel p-5 sm:w-[calc((100%-1.25rem)/2)] sm:p-6 lg:w-[calc((100%-2.5rem)/3)]"
           >
-            <div className="relative aspect-[7/4]">
+            <div className="relative aspect-[1440/787]">
               <Image
                 src={product.image}
                 alt={product.title}
                 fill
                 sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 100vw"
-                className="object-cover"
+                className="object-contain"
               />
             </div>
             <h3 className="text-h3 leading-[1.4] font-medium">
