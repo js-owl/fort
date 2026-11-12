@@ -8,26 +8,38 @@ export const industries = [
   {
     title: "Промышленность",
     image: "/images/home/industry-industrial.webp",
+    width: 639,
+    height: 716,
   },
   {
     title: "Нефть и газ",
     image: "/images/home/industry-oil.webp",
+    width: 637,
+    height: 714,
   },
   {
     title: "Энергетика",
     image: "/images/home/industry-energy.webp",
+    width: 716,
+    height: 716,
   },
   {
     title: "Цифровая инфраструктура",
     image: "/images/home/industry-digital.webp",
+    width: 777,
+    height: 720,
   },
   {
     title: "Порты и морские объекты",
     image: "/images/home/industry-ports.webp",
+    width: 693,
+    height: 720,
   },
   {
     title: "Государственные объекты",
     image: "/images/home/industry-government.webp",
+    width: 693,
+    height: 720,
   },
 ] as const;
 
