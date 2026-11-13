@@ -6,7 +6,7 @@ export function Capabilities() {
   return (
     <section
       id="capabilities"
-      className="scroll-mt-6 overflow-hidden bg-dark py-page"
+      className="scroll-mt-6 overflow-x-clip bg-dark py-page"
     >
       <Container>
         <CapabilitiesSlider products={products} />
