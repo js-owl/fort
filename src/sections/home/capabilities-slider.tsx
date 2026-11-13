@@ -159,18 +159,18 @@ export function CapabilitiesSlider({
 
     const arm = () => {
       if (timer !== null) window.clearInterval(timer);
-        console.log("Autoplay tick:", {
-          paused: pointerPaused.current,
-          hidden: document.hidden,
-          reduced: prefersReducedMotion(),
-          visible: isMostlyVisible(root),
-        });
+        // console.log("Autoplay tick:", {
+        //   paused: pointerPaused.current,
+        //   hidden: document.hidden,
+        //   reduced: prefersReducedMotion(),
+        //   visible: isMostlyVisible(root),
+        // });
 
       timer = window.setInterval(() => {
         if (
           pointerPaused.current ||
           document.hidden ||
-          prefersReducedMotion() ||
+          // prefersReducedMotion() ||
           !isMostlyVisible(root)
         ) {
           return;
