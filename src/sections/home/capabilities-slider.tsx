@@ -7,12 +7,12 @@ import type { Product } from "@/content/home";
 const AUTOPLAY_MS = 5000;
 const SCROLL_MS = 550;
 
-function prefersReducedMotion() {
-  return (
-    typeof window.matchMedia === "function" &&
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches
-  );
-}
+// function prefersReducedMotion() {
+//   return (
+//     typeof window.matchMedia === "function" &&
+//     window.matchMedia("(prefers-reduced-motion: reduce)").matches
+//   );
+// }
 
 function cardScrollLeft(root: HTMLElement, card: HTMLElement) {
   return (
@@ -145,7 +145,7 @@ export function CapabilitiesSlider({
     scrollToLeft(
       root,
       cardScrollLeft(root, target),
-      !wrapping && !prefersReducedMotion(),
+      !wrapping,
     );
   }
 
