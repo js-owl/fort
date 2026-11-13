@@ -23,7 +23,7 @@ export function Industries() {
 
     const media = window.matchMedia(desktopMedia);
     const sync = () => {
-      setHeight(media.matches ? process.offsetHeight : undefined);
+      setHeight(media.matches ? process.offsetHeight * 0.95 : undefined);
     };
 
     sync();
@@ -40,7 +40,7 @@ export function Industries() {
   return (
     <section
       id="industries"
-      className="scroll-mt-6 bg-dark py-page xl:flex xl:min-h-[calc(100vw*941/1670)] xl:flex-col xl:overflow-hidden"
+      className="scroll-mt-6 bg-dark py-page xl:flex xl:min-h-[calc(100vw*941*0.9/1670)] xl:flex-col xl:overflow-hidden"
       style={height === undefined ? undefined : { height }}
     >
       <Container className="flex flex-col gap-10 lg:gap-[60px] xl:min-h-0 xl:flex-1">
@@ -69,7 +69,7 @@ export function Industries() {
                   className="object-contain object-top xl:object-cover"
                 />
                 <div className="pointer-events-none absolute inset-x-0 bottom-0 hidden h-1/2 bg-linear-to-t from-dark from-25% to-transparent xl:block" />
-                <h3 className="absolute inset-x-0 bottom-0 z-10 p-8 text-[clamp(1.125rem,6.2cqi,1.75rem)] leading-[1.2] font-bold wrap-break-word uppercase md:p-10">
+                <h3 className="absolute inset-x-0 bottom-0 z-10 p-8 text-[clamp(1.125rem,5.0cqi,1.75rem)] leading-[1.2] font-bold wrap-break-word uppercase md:p-10">
                   {industry.title}
                 </h3>
               </article>
